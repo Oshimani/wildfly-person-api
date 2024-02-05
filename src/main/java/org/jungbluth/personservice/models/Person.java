@@ -4,8 +4,11 @@ import java.sql.Date;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 
 public class Person {
+  private int id;
+
   private String surName;
   private String firstName;
+
   @JsonbDateFormat("yyyy-MM-dd")
   private Date dateOfBirth;
 
@@ -16,6 +19,21 @@ public class Person {
     this.surName = surName;
     this.firstName = firstName;
     this.dateOfBirth = dateOfBirth;
+  }
+
+  public Person(int id, String surName, String firstName, Date dateOfBirth) {
+    this.id = id;
+    this.surName = surName;
+    this.firstName = firstName;
+    this.dateOfBirth = dateOfBirth;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getSurName() {

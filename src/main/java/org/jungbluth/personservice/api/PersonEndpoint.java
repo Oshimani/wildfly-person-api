@@ -2,20 +2,27 @@ package org.jungbluth.personservice.api;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.jungbluth.personservice.models.Person;
+import org.jungbluth.personservice.models.ValidationResult;
 import org.jungbluth.personservice.services.PersonDbService;
+import org.jungbluth.personservice.services.PersonValidatorService;
 
 @Path("/")
 public class PersonEndpoint {
   @Inject
   private PersonDbService personService;
+  @Inject
+  private PersonValidatorService personValidatorService;
 
   @POST
   @Path("/")
@@ -24,36 +31,60 @@ public class PersonEndpoint {
   public Response createPerson(Person person) {
     // validate
     if (person == null) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Person is required").build();
-    }
-    if (person.getSurName().length() <= 3) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Surname must be longer than 3 characters").build();
-    }
-    if (person.getFirstName().length() >= 20) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("First name must be shorter than 20 characters")
-          .build();
-    }
-    if (person.getDateOfBirth().after(new java.util.Date())) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Date of birth must be in the past").build();
+      return Response.status(Response.Status.BAD_REQUEST).entity("Person must not be null").build();
     }
 
-    // create person
+    ValidationResult[] results = personValidatorService.validatePerson(person);
+    for (ValidationResult result : results) {
+      if (!result.isValid) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(result.message).build();
+      }
+    }
+
     try {
-      personService.createPerson(person);
+      // create person
+      Person dbPerson = personService.createPerson(person);
+      // return response
+      return Response.ok(dbPerson).build();
+    } catch (RuntimeException e) {
+      return Response.serverError().entity("Database unavailable").build();
     } catch (Exception e) {
       return Response.serverError().entity(e.getMessage()).build();
     }
+  }
 
-    // return response
-    return Response.created(null).build();
+  @PUT
+  @Path("/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response updatePerson(@PathParam("id") int id, Person person) {
+
+    try {
+      // update person
+      Person updatedPerson = personService.updatePerson(id, person);
+      return Response.ok(updatedPerson).build();
+    } catch (Exception e) {
+      return Response.serverError().entity(e.getMessage()).build();
+    }
+  }
+
+  @DELETE
+  @Path("/{id}")
+  public Response deletePerson(@PathParam("id") int id) {
+    try {
+      personService.deletePerson(id);
+      return Response.ok().build();
+    } catch (Exception e) {
+      return Response.serverError().entity(e.getMessage()).build();
+    }
   }
 
   @GET
-  @Path("/")
+  @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getPersons() {
+  public Response getPersons(@PathParam("id") int id) {
     try {
-      Person person = personService.getPerson("Jannick", "Jungbluth");
+      Person person = personService.getPerson(id);
       return Response.ok(person).build();
     } catch (Exception e) {
       return Response.serverError().entity(e.getMessage()).build();
