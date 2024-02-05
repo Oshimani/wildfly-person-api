@@ -1,18 +1,29 @@
 package org.jungbluth.personservice.models;
 
 import java.sql.Date;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 
 public class Person {
-  private String name;
+  private String surName;
   private String firstName;
+  @JsonbDateFormat("yyyy-MM-dd")
   private Date dateOfBirth;
 
-  public String getName() {
-    return name;
+  public Person() {
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public Person(String surName, String firstName, Date dateOfBirth) {
+    this.surName = surName;
+    this.firstName = firstName;
+    this.dateOfBirth = dateOfBirth;
+  }
+
+  public String getSurName() {
+    return surName;
+  }
+
+  public void setSurName(String surName) {
+    this.surName = surName;
   }
 
   public String getFirstName() {
@@ -28,12 +39,6 @@ public class Person {
   }
 
   public void setDateOfBirth(Date dateOfBirth) {
-    this.dateOfBirth = dateOfBirth;
-  }
-
-  public Person(String name, String firstName, Date dateOfBirth) {
-    this.name = name;
-    this.firstName = firstName;
     this.dateOfBirth = dateOfBirth;
   }
 }
