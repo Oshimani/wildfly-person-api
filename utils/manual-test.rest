@@ -6,7 +6,7 @@ Content-Type: application/json
 {
   "firstName": "John",
   "surName": "Doe",
-  "dateOfBirth": "1980-01-01"
+  "dateOfBirth": "1980-03-03"
 }
 
 ###
@@ -15,11 +15,12 @@ PUT http://localhost:8080/person/4 HTTP/1.1
 Content-Type: application/json
 
 {
-  "firstName": "Johnny"
+  "firstName": "Johnny",
+  "dateOfBirth": "1980-02-02"
 }
 ###
 # DELETE
-DELETE http://localhost:8080/person/3 HTTP/1.1
-
+DELETE http://localhost:8080/person/9 HTTP/1.1
+###
 # GET
 GET http://localhost:8080/person/4 HTTP/1.1

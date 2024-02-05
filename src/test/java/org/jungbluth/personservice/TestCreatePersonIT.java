@@ -40,4 +40,26 @@ public class TestCreatePersonIT {
       e.printStackTrace();
     }
   }
+
+  @Test
+  public void testCreatePersonEndpointWithInvalidDate() {
+
+    Person person = new Person(
+        "Jannick",
+        "Jungbluth",
+        Date.valueOf("2032-06-12"));
+    // send empty post request
+    try (Client client = ClientBuilder.newClient()) {
+      Response response = client
+          .target("http://localhost:8080/")
+          .path("/person")
+          .request()
+          .header("Content-Type", "application/json")
+          .post(Entity.json(person));
+
+      assertEquals(400, response.getStatus());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

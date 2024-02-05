@@ -58,6 +58,28 @@ public class PersonEndpoint {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response updatePerson(@PathParam("id") int id, Person person) {
+    // validate all props that were given
+    if (person == null) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("Person must not be null").build();
+    }
+    if (person.getSurName() != null) {
+      ValidationResult result = personValidatorService.validateSurName(person.getSurName());
+      if (!result.isValid) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(result.message).build();
+      }
+    }
+    if (person.getFirstName() != null) {
+      ValidationResult result = personValidatorService.validateFirstName(person.getFirstName());
+      if (!result.isValid) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(result.message).build();
+      }
+    }
+    if (person.getDateOfBirth() != null) {
+      ValidationResult result = personValidatorService.validateDateOfBirth(person.getDateOfBirth());
+      if (!result.isValid) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(result.message).build();
+      }
+    }
 
     try {
       // update person
