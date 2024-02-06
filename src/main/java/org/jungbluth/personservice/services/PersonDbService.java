@@ -28,6 +28,8 @@ public class PersonDbService {
     Connection conn = null;
     Properties connectionProps = new Properties();
     // TODO: move credentials to environment variable
+    // for production these cannot be stored in code and have to be moved to elytron
+    // credential store or .env file, same for the database url
     connectionProps.put("user", "postgres");
     connectionProps.put("password", "jungbluth");
     try {
